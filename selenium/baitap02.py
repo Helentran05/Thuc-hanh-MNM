@@ -15,7 +15,7 @@ driver.get(url)
 time.sleep(2)
 
 # Lấy tất cả các thẻ <a>
-tags = driver.find_elements(By.TAG_NAME, "a")
+tags = driver.find_elements(By.XPATH, "//en[contains(@title, 'list of painters')]")
 
 # Tạo ra danh sách các liên kết
 links = [tag.get_attribute("href") for tag in tags]
