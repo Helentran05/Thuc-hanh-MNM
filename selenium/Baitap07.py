@@ -6,9 +6,8 @@ import re
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
-# ============================
 # DataFrame
-# ============================
+
 columns = [
     "Tên trường", 
     "Tên viết tắt",
@@ -22,17 +21,15 @@ columns = [
 
 df = pd.DataFrame(columns=columns)
 
-# ============================
 # Chrome
-# ============================
+
 driver = webdriver.Chrome()
 url = "https://vi.wikipedia.org/wiki/Danh_s%C3%A1ch_tr%C6%B0%E1%BB%9Dng_%C4%91%E1%BA%A1i_h%E1%BB%8Dc,_h%E1%BB%8Dc_vi%E1%BB%87n_v%C3%A0_cao_%C4%91%E1%BA%B3ng_t%E1%BA%A1i_Vi%E1%BB%87t_Nam"
 driver.get(url)
 time.sleep(3)
 
-# ============================
 # Lấy link các trường
-# ============================
+
 a_tags = driver.find_elements(By.TAG_NAME, "a")
 school_links = []
 
@@ -48,18 +45,17 @@ for a in a_tags:
 school_links = list(dict.fromkeys(school_links))
 print("Tìm thấy", len(school_links), "link trường.")
 
-# ============================
+
 # Safe Text
-# ============================
+
 def safe_text(by, value):
     try:
         return driver.find_element(by, value).text.strip()
     except:
         return ""
 
-# ============================
 # Lấy từ infobox
-# ============================
+
 def get_info(alias_list):
     for alias in alias_list:
         try:
@@ -70,9 +66,8 @@ def get_info(alias_list):
             continue
     return ""
 
-# ============================
 # Xác định loại trường (Công lập / Tư thục)
-# ============================
+
 def detect_school_type(page_text):
     text = page_text.lower()
 
@@ -88,10 +83,8 @@ def detect_school_type(page_text):
             return "Tư thục"
 
     return "Không rõ"
-
-# ============================
 # Bắt đầu crawl
-# ============================
+
 for idx, link in enumerate(school_links):
     print(f"{idx+1}/{len(school_links)} → {link}")
     driver.get(link)
