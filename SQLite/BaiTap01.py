@@ -1,4 +1,6 @@
 import sqlite3
+import sys
+sys.stdout.reconfigure(encoding="utf-8")
 
 # 1. Kết nối tới cơ sở dữ liệu
 conn = sqlite3.connect("inventory.db")
@@ -58,5 +60,24 @@ for p in all_products:
     print(f"{p[0]:<4} | {p[1]:<20} | {p[2]:<10} | {p[3]:<10}")
 
 # 3.3 UPDATE
+ql_update_price = "UPDATE products SET price = ? WHERE id = ?"
+cursor.execute(ql_update_price, (799.99, 1))
+conn.commit()
 
+
+cursor.execute("SELECT * FROM products WHERE id = 1")
+print(cursor.fetchall())
+
+
+cursor.execute("UPDATE products SET quantity = ? WHERE name = ?", (90,"Mouse Wireless X" ))
+conn.commit()
+
+cursor.execute("SELECT * FROM products WHERE name = ?", ("Mouse Wireless X",))
+result = cursor.fetchall()
+print(result)
 # 3.4 DELETE
+cursor.execute("DELETE FROM products WHERE id = ?", (1,))
+conn.commit()
+
+cursor.execute("SELECT * FROM products WHERE id = ?", (1,))
+print(cursor.fetchall())

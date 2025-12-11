@@ -6,7 +6,7 @@ import re
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
-# DataFrame
+#DataFrame
 
 columns = [
     "Tên trường", 
@@ -21,14 +21,14 @@ columns = [
 
 df = pd.DataFrame(columns=columns)
 
-# Chrome
+#Chrome
 
 driver = webdriver.Chrome()
 url = "https://vi.wikipedia.org/wiki/Danh_s%C3%A1ch_tr%C6%B0%E1%BB%9Dng_%C4%91%E1%BA%A1i_h%E1%BB%8Dc,_h%E1%BB%8Dc_vi%E1%BB%87n_v%C3%A0_cao_%C4%91%E1%BA%B3ng_t%E1%BA%A1i_Vi%E1%BB%87t_Nam"
 driver.get(url)
 time.sleep(3)
 
-# Lấy link các trường
+#Lấy link các trường
 
 a_tags = driver.find_elements(By.TAG_NAME, "a")
 school_links = []
@@ -46,7 +46,7 @@ school_links = list(dict.fromkeys(school_links))
 print("Tìm thấy", len(school_links), "link trường.")
 
 
-# Safe Text
+#Safe Text
 
 def safe_text(by, value):
     try:
@@ -54,7 +54,7 @@ def safe_text(by, value):
     except:
         return ""
 
-# Lấy từ infobox
+#Lấy từ infobox
 
 def get_info(alias_list):
     for alias in alias_list:
@@ -66,7 +66,7 @@ def get_info(alias_list):
             continue
     return ""
 
-# Xác định loại trường (Công lập / Tư thục)
+#Xác định loại trường (Công lập / Tư thục)
 
 def detect_school_type(page_text):
     text = page_text.lower()
@@ -83,7 +83,7 @@ def detect_school_type(page_text):
             return "Tư thục"
 
     return "Không rõ"
-# Bắt đầu crawl
+#Bắt đầu crawl
 
 for idx, link in enumerate(school_links):
     print(f"{idx+1}/{len(school_links)} → {link}")
@@ -94,13 +94,13 @@ for idx, link in enumerate(school_links):
 
     short_name = get_info(["Tên viết tắt", "Viết tắt"])
 
-    # Lấy mô tả đầu trang để xác định loại trường
+    #Lấy mô tả đầu trang để xác định loại trường
     try:
         intro_text = driver.find_element(By.XPATH, "//p[1]").text
     except:
         intro_text = ""
 
-    # Lấy full text trang để tăng độ chính xác
+    #Lấy full text trang để tăng độ chính xác
     try:
         full_text = driver.find_element(By.TAG_NAME, "body").text
     except:
@@ -108,7 +108,7 @@ for idx, link in enumerate(school_links):
 
     school_type = detect_school_type(full_text)
 
-    # Năm thành lập
+    #Năm thành lập
     established = get_info(["Năm thành lập", "Thành lập"])
     year_match = re.search(r"(18|19|20)\d{2}", established)
     established = year_match.group(0) if year_match else established

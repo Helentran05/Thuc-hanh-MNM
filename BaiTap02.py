@@ -75,7 +75,7 @@ for i in range(70, 71):
 
             # Lọc các đường dẫn hợp lệ (có thuộc tính href)
             links = [tag.find_element(By.TAG_NAME, "a").get_attribute("href") 
-                     for tag in li_tags if tag.find_elements(By.TAG_NAME, "a")]
+                    for tag in li_tags if tag.find_elements(By.TAG_NAME, "a")]
             all_links.extend(links)
         else:
             print(f"Lỗi: Không tìm thấy thẻ ul ở chỉ mục 20 cho ký tự {chr(i)}.")
@@ -160,24 +160,58 @@ print("\nHoàn tất quá trình cào và lưu dữ liệu tức thời.")
 ## IV. Truy vấn SQL Mẫu và Đóng kết nối
 ######################################################
 
-"""
-A. Yêu Cầu Thống Kê và Toàn Cục
-1. Đếm tổng số họa sĩ đã được lưu trữ trong bảng.
-2. Hiển thị 5 dòng dữ liệu đầu tiên để kiểm tra cấu trúc và nội dung bảng.
-3. Liệt kê danh sách các quốc tịch duy nhất có trong tập dữ liệu.
 
-B. Yêu Cầu Lọc và Tìm Kiếm
-4. Tìm và hiển thị tên của các họa sĩ có tên bắt đầu bằng ký tự 'F'.
-5. Tìm và hiển thị tên và quốc tịch của những họa sĩ có quốc tịch chứa từ khóa 'French' (ví dụ: French, French-American).
-6. Hiển thị tên của các họa sĩ không có thông tin quốc tịch (hoặc để trống, hoặc NULL).
-7. Tìm và hiển thị tên của những họa sĩ có cả thông tin ngày sinh và ngày mất (không rỗng).
-8. Hiển thị tất cả thông tin của họa sĩ có tên chứa từ khóa '%Fales%' (ví dụ: George Fales Baker).
+#A. Yêu Cầu Thống Kê và Toàn Cục
+1#. Đếm tổng số họa sĩ đã được lưu trữ trong bảng.
+sql1 = f"SELECT COUNT(*) AS total_painters FROM {TABLE_NAME};"
+df1 = pd.read_sql_query(sql1, conn)
+print("1. Tổng số họa sĩ:")
+print(df1, "\n")
+#2. Hiển thị 5 dòng dữ liệu đầu tiên để kiểm tra cấu trúc và nội dung bảng.
+sql2 = f"SELECT * FROM {TABLE_NAME} LIMIT 5;"
+df2 = pd.read_sql_query(sql2, conn)
+print("2. 5 dòng đầu tiên:")
+print(df2, "\n")
+#3. Liệt kê danh sách các quốc tịch duy nhất có trong tập dữ liệu.
 
-C. Yêu Cầu Nhóm và Sắp Xếp
-9. Sắp xếp và hiển thị tên của tất cả họa sĩ theo thứ tự bảng chữ cái (A-Z).
-10. Nhóm và đếm số lượng họa sĩ theo từng quốc tịch.
-"""
+#B. Yêu Cầu Lọc và Tìm Kiếm
+#4. Tìm và hiển thị tên của các họa sĩ có tên bắt đầu bằng ký tự 'F'.
+sql4 = f"SELECT name FROM {TABLE_NAME} WHERE name LIKE 'F%';"
+df4 = pd.read_sql_query(sql4, conn)
+print("\n4. Họa sĩ có tên bắt đầu bằng 'F':")
+print(df4)
+#5. Tìm và hiển thị tên và quốc tịch của những họa sĩ có quốc tịch chứa từ khóa 'French' (ví dụ: French, French-American).
+sql5 = f"SELECT name, nationality FROM {TABLE_NAME} WHERE nationality LIKE '%French%';"
+df5 = pd.read_sql_query(sql5, conn)
+print("\n5. Họa sĩ có quốc tịch chứa 'French':")
+print(df5)
+#6. Hiển thị tên của các họa sĩ không có thông tin quốc tịch (hoặc để trống, hoặc NULL).
+sql6 = f"SELECT name FROM {TABLE_NAME} WHERE nationality = '' OR nationality IS NULL;"
+df6 = pd.read_sql_query(sql6, conn)
+print("\n6. Họa sĩ không có thông tin quốc tịch:")
+print(df6)
+#7. Tìm và hiển thị tên của những họa sĩ có cả thông tin ngày sinh và ngày mất (không rỗng).
+sql7 = f"SELECT name FROM {TABLE_NAME} WHERE birth != '' AND death != '' AND birth IS NOT NULL AND death IS NOT NULL;"
+df7 = pd.read_sql_query(sql7, conn)
+print("\n7. Họa sĩ có đầy đủ thông tin sinh-mất:")
+print(df7)
+#8. Hiển thị tất cả thông tin của họa sĩ có tên chứa từ khóa '%Fales%' (ví dụ: George Fales Baker).
+sql8 = f"SELECT * FROM {TABLE_NAME} WHERE name LIKE '%Fales%';"
+df8 = pd.read_sql_query(sql8, conn)
+print("\n8. Họa sĩ có tên chứa 'Fales':")
+print(df8)
 
+#C. Yêu Cầu Nhóm và Sắp Xếp
+#9. Sắp xếp và hiển thị tên của tất cả họa sĩ theo thứ tự bảng chữ cái (A-Z).
+sql9 = f"SELECT name FROM {TABLE_NAME} ORDER BY name ASC;"
+df9 = pd.read_sql_query(sql9, conn)
+print("\n9. Danh sách họa sĩ theo thứ tự A-Z:")
+print(df9)
+#10. Nhóm và đếm số lượng họa sĩ theo từng quốc tịch.
+sql10 = f"SELECT nationality, COUNT(*) AS count FROM {TABLE_NAME} WHERE nationality != '' GROUP BY nationality ORDER BY count DESC;"
+df10 = pd.read_sql_query(sql10, conn)
+print("\n10. Thống kê họa sĩ theo quốc tịch:")
+print(df10)
 # Đóng kết nối cuối cùng
 conn.close()
 print("\nĐã đóng kết nối cơ sở dữ liệu.")
